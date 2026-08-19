@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GEGOX — Urbex · Aventura · Fitness</title>
+<meta name="description" content="GEGOX. Explora lo prohibido, entrena sin límites. Comunidad de urbex, aventura y fitness urbano. Únete y equípate.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --asphalt:#0a0b0d;
+  --concrete:#151719;
+  --concrete-2:#1e2124;
+  --steel:#4a5057;
+  --steel-light:#7c848c;
+  --fog:#eae7e0;
+  --hazard:#ff6a1a;
+  --hazard-dim:#c9530f;
+  --toxic:#b6ff3c;
+  --radius:2px;
+  --maxw:1240px;
+  --stripe: repeating-linear-gradient(135deg, var(--hazard) 0 22px, var(--asphalt) 22px 44px);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--asphalt);
+  color:var(--fog);
+  font-family:'Space Grotesk', sans-serif;
+  font-weight:400;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3, .display{
+  font-family:'Anton', sans-serif;
+  font-weight:400;
+  text-transform:uppercase;
+  letter-spacing:0.01em;
+  line-height:0.95;
+}
+a{color:inherit; text-decoration:none;}
+ul{list-style:none;}
+img,svg{display:block; max-width:100%;}
+button{font-family:inherit; cursor:pointer;}
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 24px;}
+.eyebrow{
+  display:inline-flex; align-items:center; gap:10px;
+  font-size:13px; letter-spacing:0.18em; text-transform:uppercase;
+  color:var(--hazard); font-weight:600; margin-bottom:18px;
+}
+.eyebrow::before{content:""; width:26px; height:2px; background:var(--hazard); display:block;}
+.stripe-bar{ height:8px; background:var(--stripe); background-size:62px 8px; }
+section{position:relative; padding:120px 0;}
+.section-head{max-width:640px; margin-bottom:64px;}
+.section-head h2{font-size:clamp(34px,5.5vw,58px); color:var(--fog);}
+.section-head p{color:var(--steel-light); font-size:17px; margin-top:18px; line-height:1.6;}
+
+/* ============ GRAIN TEXTURE ============ */
+.grain{
+  position:fixed; inset:0; pointer-events:none; z-index:9998; opacity:0.05; mix-blend-mode:overlay;
+}
+
+/* ============ NAV ============ */
+header{
+  position:fixed; top:0; left:0; right:0; z-index:1000;
+  background:rgba(10,11,13,0.82); backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+nav{display:flex; align-items:center; justify-content:space-between; padding:16px 24px; max-width:var(--maxw); margin:0 auto;}
+.logo{font-family:'Anton'; font-size:24px; letter-spacing:0.03em; color:var(--fog); display:flex; align-items:center; gap:8px;}
+.logo span{color:var(--hazard);}
+.nav-links{display:flex; gap:34px; align-items:center;}
+.nav-links a{font-size:14px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--steel-light); transition:color .2s;}
+.nav-links a:hover{color:var(--hazard);}
+.nav-cta{
+  background:var(--hazard); color:var(--asphalt); padding:10px 20px; font-weight:700;
+  font-size:13px; text-transform:uppercase; letter-spacing:0.05em; border-radius:var(--radius);
+  transition:transform .15s, background .2s;
+}
+.nav-cta:hover{background:var(--toxic); transform:translateY(-2px);}
+.burger{display:none; flex-direction:column; gap:5px; background:none; border:none;}
+.burger span{width:24px; height:2px; background:var(--fog);}
+
+/* ============ HERO ============ */
+.hero{
+  min-height:100vh; display:flex; align-items:center; padding-top:90px;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255,106,26,0.08), transparent 45%),
+    radial-gradient(circle at 80% 80%, rgba(182,255,60,0.05), transparent 40%),
+    var(--asphalt);
+  position:relative; overflow:hidden;
+}
+.hero::before{
+  content:""; position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size:44px 44px;
+  mask-image:radial-gradient(circle at 50% 40%, black, transparent 75%);
+}
+.torch{
+  position:absolute; inset:0; pointer-events:none; z-index:2;
+  background:radial-gradient(circle 320px at var(--tx,50%) var(--ty,35%), rgba(255,190,120,0.14), transparent 70%);
+  transition:background-position .05s linear;
+}
+.hero-inner{position:relative; z-index:3; width:100%;}
+.hero-tag{color:var(--steel-light); font-size:15px; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:20px; display:block;}
+.hero h1{font-size:clamp(56px, 11vw, 148px); color:var(--fog);}
+.hero h1 .accent{color:var(--hazard); -webkit-text-stroke:0; }
+.hero-sub{max-width:560px; font-size:19px; color:var(--steel-light); margin:28px 0 40px; line-height:1.65;}
+.hero-actions{display:flex; gap:16px; flex-wrap:wrap; margin-bottom:70px;}
+.btn{
+  padding:16px 30px; font-weight:700; font-size:14px; text-transform:uppercase; letter-spacing:0.06em;
+  border-radius:var(--radius); transition:transform .15s, box-shadow .2s; display:inline-flex; align-items:center; gap:10px;
+}
+.btn-primary{background:var(--hazard); color:var(--asphalt);}
+.btn-primary:hover{transform:translateY(-3px); box-shadow:0 10px 30px rgba(255,106,26,0.35);}
+.btn-ghost{border:1px solid var(--steel); color:var(--fog);}
+.btn-ghost:hover{border-color:var(--fog); transform:translateY(-3px);}
+.stat-row{display:flex; gap:60px; flex-wrap:wrap; border-top:1px solid rgba(255,255,255,0.08); padding-top:34px;}
+.stat b{font-family:'Anton'; font-size:38px; color:var(--fog); display:block;}
+.stat span{font-size:13px; color:var(--steel-light); text-transform:uppercase; letter-spacing:0.08em;}
+
+/* ============ REVEAL ============ */
+.reveal{opacity:0; transform:translateY(36px); transition:opacity .7s ease, transform .7s ease;}
+.reveal.visible{opacity:1; transform:translateY(0);}
+
+/* ============ QUÉ ES GEGOX ============ */
+.about{background:var(--concrete);}
+.about-grid{display:grid; grid-template-columns:1fr 1fr; gap:70px; align-items:start;}
+.about-grid p{color:var(--steel-light); font-size:17px; line-height:1.75; margin-bottom:18px;}
+.pillars{display:grid; gap:22px;}
+.pillar{
+  border-left:2px solid var(--hazard); padding:6px 0 6px 22px; position:relative;
+}
+.pillar h3{font-size:22px; color:var(--fog); margin-bottom:6px; font-family:'Space Grotesk'; text-transform:none; font-weight:700;}
+.pillar p{color:var(--steel-light); font-size:15px; line-height:1.6;}
+
+/* ============ REDES ============ */
+.social{background:var(--asphalt);}
+.social-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:18px;}
+.social-card{
+  background:var(--concrete); border:1px solid rgba(255,255,255,0.07); border-radius:var(--radius);
+  padding:30px; transition:transform .25s, border-color .25s, background .25s;
+  display:flex; flex-direction:column; gap:16px;
+}
+.social-card:hover{transform:translateY(-6px); border-color:var(--hazard); background:var(--concrete-2);}
+.social-icon{width:44px; height:44px; color:var(--hazard);}
+.social-card h3{font-family:'Space Grotesk'; font-weight:700; font-size:19px; text-transform:none;}
+.social-card p{color:var(--steel-light); font-size:14px;}
+.social-card .handle{color:var(--toxic); font-size:13px; font-weight:600; margin-top:auto;}
+
+/* ============ PRODUCTOS ============ */
+.products{background:var(--concrete); perspective:1200px;}
+.product-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:26px;}
+.product-card{
+  background:var(--asphalt); border:1px solid rgba(255,255,255,0.08); border-radius:var(--radius);
+  padding:0; overflow:hidden; transform-style:preserve-3d; transition:transform .12s ease-out, box-shadow .2s;
+  will-change:transform;
+}
+.product-card:hover{box-shadow:0 25px 50px rgba(0,0,0,0.5);}
+.product-visual{
+  height:220px; display:flex; align-items:center; justify-content:center;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255,106,26,0.18), transparent 60%),
+    linear-gradient(160deg, var(--concrete-2), var(--asphalt));
+  position:relative;
+}
+.product-visual svg{width:84px; height:84px; color:var(--hazard); transform:translateZ(40px); filter:drop-shadow(0 12px 18px rgba(0,0,0,0.5));}
+.product-body{padding:24px;}
+.product-body .cat{font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--toxic); font-weight:600;}
+.product-body h3{font-family:'Space Grotesk'; font-weight:700; font-size:21px; text-transform:none; margin:8px 0 8px;}
+.product-body p{color:var(--steel-light); font-size:14px; line-height:1.5; margin-bottom:18px;}
+.product-foot{display:flex; align-items:center; justify-content:space-between;}
+.price{font-family:'Anton'; font-size:22px; color:var(--fog);}
+.add-btn{
+  background:transparent; border:1px solid var(--steel); color:var(--fog); padding:9px 16px; font-size:12px;
+  font-weight:700; text-transform:uppercase; letter-spacing:0.05em; border-radius:var(--radius); transition:.2s;
+}
+.add-btn:hover{background:var(--hazard); border-color:var(--hazard); color:var(--asphalt);}
+.shop-note{margin-top:26px; font-size:13px; color:var(--steel-light);}
+
+/* ============ EVENTOS ============ */
+.events{background:var(--asphalt);}
+.event-list{display:flex; flex-direction:column;}
+.event-row{
+  display:grid; grid-template-columns:140px 1fr auto; gap:28px; align-items:center;
+  padding:28px 0; border-bottom:1px solid rgba(255,255,255,0.08); transition:padding-left .25s, border-color .25s;
+}
+.event-row:hover{padding-left:14px; border-color:var(--hazard);}
+.event-date{font-family:'Anton'; font-size:17px; color:var(--hazard); line-height:1.2;}
+.event-date small{display:block; font-family:'Space Grotesk'; font-size:12px; color:var(--steel-light); font-weight:600; text-transform:uppercase; letter-spacing:0.08em;}
+.event-info h3{font-family:'Space Grotesk'; font-weight:700; font-size:20px; text-transform:none; margin-bottom:6px;}
+.event-info p{color:var(--steel-light); font-size:14px;}
+.event-tag{
+  border:1px solid var(--steel); padding:7px 14px; font-size:11px; text-transform:uppercase;
+  letter-spacing:0.08em; color:var(--steel-light); border-radius:var(--radius); white-space:nowrap;
+}
+
+/* ============ COLABORA ============ */
+.collab{background:var(--concrete);}
+.collab-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:22px; margin-bottom:56px;}
+.collab-card{
+  background:var(--asphalt); border:1px solid rgba(255,255,255,0.07); border-radius:var(--radius); padding:28px;
+  transition:transform .25s, border-color .25s;
+}
+.collab-card:hover{transform:translateY(-6px); border-color:var(--toxic);}
+.collab-card svg{width:34px; height:34px; color:var(--toxic); margin-bottom:16px;}
+.collab-card h3{font-family:'Space Grotesk'; font-weight:700; font-size:18px; text-transform:none; margin-bottom:8px;}
+.collab-card p{color:var(--steel-light); font-size:14px; line-height:1.55;}
+.collab-cta{
+  background:var(--concrete-2); border:1px solid rgba(255,255,255,0.08); border-radius:var(--radius);
+  padding:44px; display:flex; align-items:center; justify-content:space-between; gap:30px; flex-wrap:wrap;
+}
+.collab-cta h3{font-size:26px; color:var(--fog); font-family:'Anton'; max-width:420px;}
+.collab-cta p{color:var(--steel-light); margin-top:10px; font-size:15px;}
+
+/* ============ FOOTER ============ */
+footer{background:var(--asphalt); padding:60px 0 30px; border-top:1px solid rgba(255,255,255,0.07);}
+.foot-grid{display:flex; justify-content:space-between; flex-wrap:wrap; gap:40px; margin-bottom:50px;}
+.foot-logo{font-family:'Anton'; font-size:28px;}
+.foot-logo span{color:var(--hazard);}
+.foot-tagline{color:var(--steel-light); font-size:14px; max-width:280px; margin-top:12px;}
+.foot-links{display:flex; gap:70px; flex-wrap:wrap;}
+.foot-col h4{font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--steel-light); margin-bottom:16px;}
+.foot-col a{display:block; font-size:14px; color:var(--fog); margin-bottom:10px; transition:color .2s;}
+.foot-col a:hover{color:var(--hazard);}
+.foot-bottom{display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; font-size:13px; color:var(--steel-light); border-top:1px solid rgba(255,255,255,0.06); padding-top:24px;}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:860px){
+  .nav-links{position:fixed; top:70px; left:0; right:0; background:var(--asphalt); flex-direction:column; padding:26px; gap:22px; border-bottom:1px solid rgba(255,255,255,0.08); transform:translateY(-130%); transition:transform .3s; }
+  .nav-links.open{transform:translateY(0);}
+  .burger{display:flex;}
+  .about-grid{grid-template-columns:1fr;}
+  .event-row{grid-template-columns:1fr; gap:10px;}
+  .collab-cta{flex-direction:column; align-items:flex-start;}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none !important; transition:none !important;}
+}
+</style>
+</head>
+<body>
+
+<svg class="grain" width="0" height="0"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter></svg>
+<div class="grain" style="filter:url(#noiseFilter)"></div>
+
+<header>
+  <nav>
+    <a href="#inicio" class="logo">GEGO<span>X</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#inicio">Inicio</a></li>
+      <li><a href="#comunidad">Comunidad</a></li>
+      <li><a href="#redes">Redes</a></li>
+      <li><a href="#productos">Productos</a></li>
+      <li><a href="#eventos">Eventos</a></li>
+      <li><a href="#colabora">Colabora</a></li>
+      <li><a href="#redes" class="nav-cta">Únete</a></li>
+    </ul>
+    <button class="burger" id="burger" aria-label="Abrir menú"><span></span><span></span><span></span></button>
+  </nav>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="inicio">
+  <div class="torch" id="torch"></div>
+  <div class="wrap hero-inner">
+    <span class="hero-tag">Urbex · Aventura · Fitness</span>
+    <h1>ENTRA DONDE<br>NADIE <span class="accent">ENTRA</span></h1>
+    <p class="hero-sub">GEGOX es una marca y una comunidad para quienes ven una nave abandonada, un tejado o una cuesta imposible y solo piensan en una cosa: subir, entrar, explorar. Urbex, aventura y entrenamiento real, sin filtros.</p>
+    <div class="hero-actions">
+      <a href="#redes" class="btn btn-primary">Únete a la comunidad</a>
+      <a href="#productos" class="btn btn-ghost">Ver equipo GEGOX</a>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><b>+4.200</b><span>Exploradores</span></div>
+      <div class="stat"><b>63</b><span>Ciudades marcadas</span></div>
+      <div class="stat"><b>180+</b><span>Retos completados</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= QUÉ SOMOS / COMUNIDAD ================= -->
+<div class="stripe-bar"></div>
+<section class="about" id="comunidad">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Qué es GEGOX</span>
+      <h2>No es una marca. Es un punto de encuentro.</h2>
+    </div>
+    <div class="about-grid">
+      <div class="reveal">
+        <p>GEGOX nació de una idea simple: la ciudad y la montaña son el gimnasio más grande del mundo, si te atreves a usarlas. Empezamos explorando fábricas abandonadas y terminamos entrenando en sus ruinas, escalando sus estructuras y documentando cada subida.</p>
+        <p>Hoy somos una comunidad de gente joven que no espera a que las cosas pasen: sube al tejado, cruza la valla, se pone las zapatillas a las 6 de la mañana. Compartimos rutas, retos físicos, ubicaciones y equipo pensado para aguantar lo que le echemos.</p>
+        <p>Si te reconoces en esto, ya eres uno de los nuestros. Solo falta que lo hagas oficial.</p>
+      </div>
+      <div class="pillars reveal">
+        <div class="pillar">
+          <h3>Urbex</h3>
+          <p>Exploración urbana de lugares abandonados: fábricas, hospitales, estaciones. Respeto por el sitio, cero destrozos, máximo respeto.</p>
+        </div>
+        <div class="pillar">
+          <h3>Aventura</h3>
+          <p>Rutas, escaladas, acampadas improvisadas y planes que no caben en un itinerario cerrado.</p>
+        </div>
+        <div class="pillar">
+          <h3>Fitness</h3>
+          <p>Entrenamiento funcional al aire libre. Tu cuerpo como única herramienta, la ciudad como circuito.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= REDES ================= -->
+<section class="social" id="redes">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Dónde encontrarnos</span>
+      <h2>Síguenos antes de que se cierre la puerta</h2>
+      <p>Ubicaciones, retos en directo y la comunidad más activa del urbex hispano. Elige tu red.</p>
+    </div>
+    <div class="social-grid">
+
+      <a href="#" class="social-card reveal">
+        <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"/></svg>
+        <h3>Instagram</h3>
+        <p>Fotos y stories desde dentro de cada exploración, en tiempo real.</p>
+        <span class="handle">@gegox</span>
+      </a>
+
+      <a href="#" class="social-card reveal">
+        <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 3c.3 2 1.8 3.6 4 4v3.2c-1.5 0-3-.4-4-1.2v6.4a5.6 5.6 0 1 1-5.6-5.6c.4 0 .8 0 1.1.1v3.3a2.3 2.3 0 1 0 1.5 2.2V3h3z"/></svg>
+        <h3>TikTok</h3>
+        <p>Clips cortos de subidas, entrenamientos y momentos que no salen bien a la primera.</p>
+        <span class="handle">@gegox.urbex</span>
+      </a>
+
+      <a href="#" class="social-card reveal">
+        <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M10.5 9.5v5l4.5-2.5-4.5-2.5z" fill="currentColor" stroke="none"/></svg>
+        <h3>YouTube</h3>
+        <p>Documentales cortos de las expediciones más grandes y detrás de cámaras.</p>
+        <span class="handle">GEGOX Oficial</span>
+      </a>
+
+      <a href="#" class="social-card reveal">
+        <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 4 3 11.5l6.5 2.2L18 6l-7 8.5.2 6L14 16l4.5 3L21 4z"/></svg>
+        <h3>Telegram</h3>
+        <p>El grupo donde se comparten ubicaciones, avisos y se organizan quedadas.</p>
+        <span class="handle">t.me/gegoxcrew</span>
+      </a>
+
+      <a href="#" class="social-card reveal">
+        <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 4v4M16 4v4M4 10h16M6 10v9a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-9"/></svg>
+        <h3>Strava</h3>
+        <p>Rutas GPS de cada expedición y reto fitness, listas para que las repitas.</p>
+        <span class="handle">Club GEGOX</span>
+      </a>
+
+      <a href="#" class="social-card reveal">
+        <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12a8 8 0 1 1 8 8"/><path d="M4 12h5M4 12l3-3M4 12l3 3"/></svg>
+        <h3>Discord</h3>
+        <p>Servidor de la crew: canales por ciudad, retos semanales y chat 24/7.</p>
+        <span class="handle">discord.gg/gegox</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= PRODUCTOS ================= -->
+<div class="stripe-bar"></div>
+<section class="products" id="productos">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Equípate</span>
+      <h2>Hecho para aguantar lo que tú aguantas</h2>
+      <p>Ropa y equipo probado en fábricas abandonadas, tejados y madrugadas de entrenamiento. Mueve el ratón sobre cada producto.</p>
+    </div>
+    <div class="product-grid" id="productGrid">
+
+      <div class="product-card">
+        <div class="product-visual">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M7 4l1.5 3h7L17 4"/><path d="M5 7l3-3 4 2 4-2 3 3-3 3v11H8V10L5 7z"/></svg>
+        </div>
+        <div class="product-body">
+          <span class="cat">Ropa</span>
+          <h3>Camiseta GEGOX Recon</h3>
+          <p>Algodón reforzado, corte oversize, print reflectante para las salidas nocturnas.</p>
+          <div class="product-foot">
+            <span class="price">24,90 €</span>
+            <button class="add-btn">Añadir</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-visual">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="7" y="9" width="10" height="6" rx="1"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <div class="product-body">
+          <span class="cat">Iluminación</span>
+          <h3>Linterna Blackout X1</h3>
+          <p>1200 lúmenes, resistente al agua, autonomía de 12h. La que va delante siempre.</p>
+          <div class="product-foot">
+            <span class="price">39,90 €</span>
+            <button class="add-btn">Añadir</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-visual">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 8a6 6 0 0 1 12 0v3H6V8z"/><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M9 15h6"/></svg>
+        </div>
+        <div class="product-body">
+          <span class="cat">Equipo</span>
+          <h3>Mochila Perímetro 28L</h3>
+          <p>Compartimento técnico, correas de pecho, tejido resistente a desgarros.</p>
+          <div class="product-foot">
+            <span class="price">64,90 €</span>
+            <button class="add-btn">Añadir</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-visual">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 20l4-9 4 5 3-4 5 8H4z"/><circle cx="8" cy="6" r="2.4"/></svg>
+        </div>
+        <div class="product-body">
+          <span class="cat">Ropa</span>
+          <h3>Sudadera Zona Restringida</h3>
+          <p>Capucha reforzada, bolsillo canguro técnico, algodón pesado para el frío de madrugada.</p>
+          <div class="product-foot">
+            <span class="price">44,90 €</span>
+            <button class="add-btn">Añadir</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-visual">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 10a8 8 0 0 1 16 0v2H4v-2z"/><path d="M8 12v7M16 12v7" /></svg>
+        </div>
+        <div class="product-body">
+          <span class="cat">Accesorios</span>
+          <h3>Gorra Perfil Bajo</h3>
+          <p>Visera curva, ajuste trasero, logo GEGOX bordado en 3D.</p>
+          <div class="product-foot">
+            <span class="price">19,90 €</span>
+            <button class="add-btn">Añadir</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-visual">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="10" width="18" height="7" rx="2"/><path d="M7 10V7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v3"/></svg>
+        </div>
+        <div class="product-body">
+          <span class="cat">Equipo</span>
+          <h3>Guantes Grip Urbano</h3>
+          <p>Palma antideslizante, nudillos reforzados, pensados para trepar sin pensarlo.</p>
+          <div class="product-foot">
+            <span class="price">17,90 €</span>
+            <button class="add-btn">Añadir</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <p class="shop-note reveal">* Catálogo de ejemplo. Conecta esta sección a tu pasarela de pago o tienda (Stripe, PayPal, WooCommerce...) para activar la compra real.</p>
+  </div>
+</section>
+
+<!-- ================= EVENTOS ================= -->
+<section class="events" id="eventos">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Próximos planes</span>
+      <h2>Lo que se viene</h2>
+      <p>Quedadas abiertas a toda la comunidad. Apúntate por Telegram o Discord.</p>
+    </div>
+    <div class="event-list">
+
+      <div class="event-row reveal">
+        <div class="event-date">14 SEP<small>Zaragoza</small></div>
+        <div class="event-info">
+          <h3>Exploración nocturna — Antigua fábrica textil</h3>
+          <p>Entrada al atardecer, linternas obligatorias, grupo reducido de 12 personas.</p>
+        </div>
+        <span class="event-tag">Urbex</span>
+      </div>
+
+      <div class="event-row reveal">
+        <div class="event-date">28 SEP<small>Barcelona</small></div>
+        <div class="event-info">
+          <h3>Reto fitness urbano · Circuito de escaleras</h3>
+          <p>Entrenamiento funcional en 5 puntos de la ciudad. Nivel abierto a todos.</p>
+        </div>
+        <span class="event-tag">Fitness</span>
+      </div>
+
+      <div class="event-row reveal">
+        <div class="event-date">11 OCT<small>Bilbao</small></div>
+        <div class="event-info">
+          <h3>Ruta de aventura · Cantera abandonada</h3>
+          <p>Caminata + escalada de baja dificultad. Salida a las 7:00, vuelta al mediodía.</p>
+        </div>
+        <span class="event-tag">Aventura</span>
+      </div>
+
+      <div class="event-row reveal">
+        <div class="event-date">2 NOV<small>Madrid</small></div>
+        <div class="event-info">
+          <h3>Quedada GEGOX Crew · Presentación colección</h3>
+          <p>Encuentro de comunidad, sorteo de equipo y avance de la próxima expedición.</p>
+        </div>
+        <span class="event-tag">Comunidad</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= COLABORA ================= -->
+<div class="stripe-bar"></div>
+<section class="collab" id="colabora">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Ideas para colaborar</span>
+      <h2>Construyamos esto juntos</h2>
+      <p>GEGOX crece con la gente que se atreve a aportar. Así puedes formar parte.</p>
+    </div>
+    <div class="collab-grid">
+
+      <div class="collab-card reveal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        <h3>Marcas y patrocinios</h3>
+        <p>Colaboraciones de producto, packs de equipo o presencia en nuestros eventos y contenido.</p>
+      </div>
+
+      <div class="collab-card reveal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+        <h3>Embajadores GEGOX</h3>
+        <p>Si vives urbex, aventura y fitness, súbete a la crew oficial y representa la marca en tu ciudad.</p>
+      </div>
+
+      <div class="collab-card reveal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21s-7-4.4-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.6-9.5 9-9.5 9z"/></svg>
+        <h3>Localizaciones</h3>
+        <p>¿Conoces un sitio abandonado con potencial? Compártelo con el equipo de exploración.</p>
+      </div>
+
+      <div class="collab-card reveal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><circle cx="12" cy="13.5" r="3"/></svg>
+        <h3>Foto y vídeo</h3>
+        <p>Creadores de contenido que quieran documentar expediciones y crecer con nosotros.</p>
+      </div>
+
+    </div>
+
+    <div class="collab-cta reveal">
+      <div>
+        <h3>¿Tienes una idea que no está en la lista?</h3>
+        <p>Escríbenos y la vemos. Las mejores colaboraciones nunca estaban en el plan inicial.</p>
+      </div>
+      <a href="mailto:hola@gegox.com" class="btn btn-primary">Escríbenos</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-logo">GEGO<span>X</span></div>
+        <p class="foot-tagline">Urbex, aventura y fitness para quienes se comen el mundo en vez de mirarlo.</p>
+      </div>
+      <div class="foot-links">
+        <div class="foot-col">
+          <h4>Explora</h4>
+          <a href="#comunidad">Comunidad</a>
+          <a href="#eventos">Eventos</a>
+          <a href="#colabora">Colabora</a>
+        </div>
+        <div class="foot-col">
+          <h4>Tienda</h4>
+          <a href="#productos">Todos los productos</a>
+          <a href="#productos">Novedades</a>
+        </div>
+        <div class="foot-col">
+          <h4>Síguenos</h4>
+          <a href="#redes">Instagram</a>
+          <a href="#redes">TikTok</a>
+          <a href="#redes">Discord</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 GEGOX. Explora con respeto, entrena sin límites.</span>
+      <span>hola@gegox.com</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ---- Menú móvil ----
+const burger = document.getElementById('burger');
+const navLinks = document.getElementById('navLinks');
+burger.addEventListener('click', () => navLinks.classList.toggle('open'));
+navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+// ---- Efecto linterna en el hero ----
+const hero = document.querySelector('.hero');
+const torch = document.getElementById('torch');
+let tx = 50, ty = 35, autoAngle = 0;
+hero.addEventListener('mousemove', (e) => {
+  const rect = hero.getBoundingClientRect();
+  tx = ((e.clientX - rect.left) / rect.width) * 100;
+  ty = ((e.clientY - rect.top) / rect.height) * 100;
+  torch.style.setProperty('--tx', tx + '%');
+  torch.style.setProperty('--ty', ty + '%');
+});
+// Movimiento ambiental automático en móvil / sin cursor
+function ambientTorch(){
+  autoAngle += 0.004;
+  const ax = 50 + Math.sin(autoAngle) * 22;
+  const ay = 35 + Math.cos(autoAngle * 0.8) * 14;
+  if (window.matchMedia('(hover: none)').matches) {
+    torch.style.setProperty('--tx', ax + '%');
+    torch.style.setProperty('--ty', ay + '%');
+  }
+  requestAnimationFrame(ambientTorch);
+}
+ambientTorch();
+
+// ---- Tilt 3D en tarjetas de producto ----
+document.querySelectorAll('.product-card').forEach(card => {
+  card.addEventListener('mousemove', (e) => {
+    const r = card.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - 0.5;
+    const y = (e.clientY - r.top) / r.height - 0.5;
+    card.style.transform = `perspective(700px) rotateX(${(-y * 12).toFixed(2)}deg) rotateY(${(x * 12).toFixed(2)}deg) scale3d(1.03,1.03,1.03)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = 'perspective(700px) rotateX(0) rotateY(0) scale3d(1,1,1)';
+  });
+});
+
+// ---- Scroll reveal ----
+const revealEls = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      io.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15 });
+revealEls.forEach(el => io.observe(el));
+
+// ---- Header al hacer scroll ----
+const header = document.querySelector('header');
+window.addEventListener('scroll', () => {
+  header.style.boxShadow = window.scrollY > 20 ? '0 8px 24px rgba(0,0,0,0.35)' : 'none';
+});
+</script>
+</body>
+</html>
